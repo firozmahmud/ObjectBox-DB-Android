@@ -19,17 +19,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private List<User> users;
     private ItemClick itemClick;
+    private Context context;
+    private boolean isAnyItemSelected;
 
 
     public UserAdapter(List<User> users, Context context) {
         this.users = users;
+        this.context = context;
         this.itemClick = (ItemClick) context;
     }
 
     public interface ItemClick {
-        void itemClick(User user, int position);
+        void itemClick(User user);
 
-        void itemLongClick(User user, int position);
+        void itemLongClick(boolean isAnyItemSelected, User user);
     }
 
     @NonNull
@@ -45,6 +48,14 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         holder.binding.name.setText(users.get(position).name);
         holder.binding.profession.setText(users.get(position).profession);
+
+        if (users.get(position).isSelected) {
+            holder.binding.getRoot().setBackgroundColor(context.getResources().getColor(R.color.green_lite));
+            holder.binding.checkedIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.binding.getRoot().setBackgroundColor(context.getResources().getColor(R.color.white));
+            holder.binding.checkedIcon.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -56,7 +67,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
         ItemUserHeadlineBinding binding;
 
-        public ViewHolder(ItemUserHeadlineBinding binding) {
+        public ViewHolder(final ItemUserHeadlineBinding binding) {
             super(binding.getRoot());
 
             this.binding = binding;
@@ -64,18 +75,44 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             binding.getRoot().setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemClick.itemClick(users.get(getAdapterPosition()), getAdapterPosition());
+                    itemClick.itemClick(users.get(getAdapterPosition()));
                 }
             });
 
             binding.getRoot().setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-
-                    itemClick.itemLongClick(users.get(getAdapterPosition()), getAdapterPosition());
+                    selectOrUnSelect(getAdapterPosition(), binding);
                     return false;
                 }
             });
         }
+    }
+
+    public void clearAll() {
+
+        for (int i = 0; i < users.size(); i++) {
+            users.get(i).isSelected = false;
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void selectOrUnSelect(int position, ItemUserHeadlineBinding binding) {
+
+        users.get(position).isSelected = !users.get(position).isSelected;
+        notifyDataSetChanged();
+
+
+        for (int i = 0; i < users.size(); i++) {
+            if (users.get(i).isSelected) {
+                isAnyItemSelected = true;
+                break;
+            }
+            isAnyItemSelected = false;
+        }
+
+        itemClick.itemLongClick(isAnyItemSelected, users.get(position));
+
     }
 }

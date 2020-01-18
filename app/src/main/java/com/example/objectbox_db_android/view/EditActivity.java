@@ -1,38 +1,57 @@
 package com.example.objectbox_db_android.view;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
 import android.os.Bundle;
 import android.view.View;
 
 import com.example.objectbox_db_android.R;
-import com.example.objectbox_db_android.databinding.ActivityAddBinding;
+import com.example.objectbox_db_android.databinding.ActivityEditBinding;
 import com.example.objectbox_db_android.model.Details;
 import com.example.objectbox_db_android.model.User;
 import com.example.objectbox_db_android.objectbox.ObjectBox;
 
 import java.util.Date;
 
-import io.objectbox.BoxStore;
+public class EditActivity extends BaseActivity {
 
-public class AddActivity extends BaseActivity {
+    private ActivityEditBinding binding;
+    private String name, profession, number, location;
+    private long id;
 
-    private ActivityAddBinding binding;
-    private BoxStore boxStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_add);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_edit);
 
+        getExtras();
         initComponent();
         initListener();
     }
 
+    private void getExtras() {
+        Bundle bundle = getIntent().getExtras();
+        id = bundle.getLong("id");
+        name = bundle.getString("name");
+        profession = bundle.getString("profession");
+        number = bundle.getString("number");
+        location = bundle.getString("location");
+    }
 
     private void initComponent() {
+
         binding.toolbar.backButtonBackScreenLayout.setVisibility(View.VISIBLE);
-        boxStore = ObjectBox.get();
+        binding.toolbar.homeScreen.setVisibility(View.GONE);
+        binding.toolbar.editScren.setVisibility(View.GONE);
+
+        binding.toolbar.backButtonScreenTitle.setText("Edit");
+
+        binding.nameEt.setText(name);
+        binding.professionEt.setText(profession);
+        binding.numberEt.setText(number);
+        binding.locationEt.setText(location);
     }
 
     private void initListener() {
@@ -45,15 +64,14 @@ public class AddActivity extends BaseActivity {
         });
 
 
-        binding.addBtn.setOnClickListener(new View.OnClickListener() {
+        binding.updateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String name = binding.nameEt.getText().toString().trim();
-                String profession = binding.professionEt.getText().toString().trim();
-                String number = binding.numberEt.getText().toString().trim();
-                String location = binding.locationEt.getText().toString().trim();
-
+                name = binding.nameEt.getText().toString().trim();
+                profession = binding.professionEt.getText().toString().trim();
+                number = binding.numberEt.getText().toString().trim();
+                location = binding.locationEt.getText().toString().trim();
 
                 if (name.isEmpty()) {
                     binding.nameEt.setError("Name is required");
@@ -79,36 +97,26 @@ public class AddActivity extends BaseActivity {
                     return;
                 }
 
-                saveUser(name, profession, number, location);
+                updateUser(name, profession, number, location);
 
             }
         });
     }
 
-    private void saveUser(String name, String profession, String number, String location) {
+    private void updateUser(String name, String profession, String number, String location) {
 
         User user = new User();
+        Details details = new Details(number, location);
+        user.id = id;
         user.name = name;
         user.profession = profession;
         user.createdAt = new Date();
-        user.details.setTarget(new Details(number, location));
+        user.details.setTarget(details);
 
-        if (boxStore.boxFor(User.class).put(user) > 0) {
-            clearInputFields();
-            showSnackbar("Saved", true);
+        if (ObjectBox.get().boxFor(User.class).put(user) > 0) {
+            showSnackbar("Updated", true);
         } else {
-            toast("Failed to save");
+            showSnackbar("Failed to update", true);
         }
-
     }
-
-    private void clearInputFields() {
-
-        binding.nameEt.setText("");
-        binding.professionEt.setText("");
-        binding.numberEt.setText("");
-        binding.locationEt.setText("");
-
-    }
-
 }

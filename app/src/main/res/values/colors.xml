@@ -10,6 +10,7 @@
     <color name="black">#000000</color>
     <color name="blue">#3F51B5</color>
     <color name="green">#4CAF50</color>
+    <color name="green_lite">#A3F755</color>
     <color name="red">#F44336</color>
     <color name="pink">#E91E63</color>
     <color name="yellow">#FFEB3B</color>

@@ -1,6 +1,5 @@
 package com.example.objectbox_db_android.model;
 
-
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Id;
 

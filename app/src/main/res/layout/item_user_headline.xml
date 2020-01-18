@@ -8,7 +8,9 @@
         style="@style/Widget.MaterialComponents.CardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="12dp"
         android:clickable="true"
         android:elevation="8dp"
         android:foreground="?attr/selectableItemBackground"
@@ -21,10 +23,23 @@
             android:padding="10dp">
 
 
+            <ImageView
+                android:id="@+id/checkedIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/ic_check_circle"
+                android:visibility="gone">
+
+            </ImageView>
+
+
             <TextView
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/checkedIcon"
                 android:text="Donuld Trump"
                 android:textColor="@color/black"
                 android:textSize="14sp"
@@ -38,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/name"
+                android:layout_toRightOf="@id/checkedIcon"
                 android:text="Profession: ">
 
             </TextView>
